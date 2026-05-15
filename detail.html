@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title id="pageTitle">Chi tiết văn bản - THƯ VIỆN PHÁP LUẬT</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+  .detail-wrap { background:#fff; border:1px solid #ddd; }
+  .detail-doc-header {
+    background:linear-gradient(180deg,#f9f9f9,#f0f0f0);
+    border-bottom:2px solid #cc0000;
+    padding:20px 24px;
+  }
+  .detail-doc-header h1 {
+    font-size:18px; color:#1a3c6e; margin-bottom:14px; line-height:1.5;
+  }
+  .meta-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:10px; font-size:12px;
+  }
+  @media(max-width:768px){ .meta-grid{grid-template-columns:1fr 1fr;} }
+  .meta-item { background:#fff; border:1px solid #e0e0e0; padding:8px 10px; border-radius:3px; }
+  .meta-item b { display:block; color:#999; font-size:10px; text-transform:uppercase; margin-bottom:3px; }
+  .meta-item span { font-weight:700; color:#333; font-size:12px; }
+
+  .detail-body { padding:24px; }
+  .doc-content { font-size:13px; line-height:1.9; color:#333; }
+  .doc-content h1,.doc-content h2 { color:#cc0000; text-align:center; margin:16px 0 10px; font-size:15px; }
+  .doc-content h3 { color:#1a3c6e; text-align:center; margin:14px 0 8px; font-size:14px; }
+  .doc-content h4 { font-weight:700; margin:12px 0 4px; font-size:13px; }
+  .doc-content p { margin-bottom:8px; text-align:justify; }
+  .doc-content hr { border:none; border-top:1px solid #eee; margin:12px 0; }
+  .doc-content pre { white-space:pre-wrap; font-family:inherit; font-size:13px; }
+
+  .action-bar {
+    background:#f5f5f5; border-top:1px solid #e0e0e0;
+    padding:12px 24px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+  }
+  .action-bar a, .action-bar button {
+    padding:7px 16px; font-size:12px; border-radius:3px; cursor:pointer;
+    text-decoration:none; font-family:inherit;
+  }
+  .btn-primary { background:#cc0000; color:#fff; border:none; }
+  .btn-primary:hover { background:#aa0000; }
+  .btn-secondary { background:#fff; color:#0056b3; border:1px solid #0056b3; }
+  .btn-secondary:hover { background:#f0f4ff; }
+
+  .back-btn {
+    display:inline-flex; align-items:center; gap:6px;
+    margin-bottom:12px; color:#0056b3; font-size:13px; font-weight:500;
+  }
+  .loading-state { padding:60px; text-align:center; color:#999; font-size:14px; }
+  .tag-list { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .tag-list span {
+    background:#e8f0fe; color:#1a3c6e; padding:3px 10px;
+    border-radius:12px; font-size:11px;
+  }
+</style>
+</head>
+<body>
+
+
+
+<!-- HEADER NAV -->
+<div class="header-nav">
+  <div class="container">
+    <div class="header-nav-left">
+      <a href="index.html">📋 Văn bản Pháp luật</a>
+      <a href="index.html?tab=map">🗺️ Bản đồ Quy hoạch</a>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER MAIN -->
+<div class="header-main">
+  <div class="container">
+    <a class="logo" href="index.html">
+      <div class="logo-circle">⚖️</div>
+      <div class="logo-text-group">
+        <div class="logo-text">THƯ VIỆN PHÁP LUẬT</div>
+        <div class="logo-slogan">Nông nghiệp · Đất đai · Địa chính · Quy hoạch</div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="main-layout">
+  <div class="container">
+    <div class="main-grid">
+
+      <!-- LEFT SIDEBAR -->
+      <aside class="left-sidebar">
+        <div class="sidebar-box">
+          <div class="sidebar-box-header">📂 Điều hướng</div>
+          <ul class="sidebar-list">
+            <li><a href="index.html"><span class="num">←</span>Danh sách văn bản</a></li>
+            <li><a href="index.html"><span class="num">🏠</span>Trang chủ</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-box" id="relatedBox" style="display:none">
+          <div class="sidebar-box-header blue">📎 Thông tin văn bản</div>
+          <div id="relatedContent" style="padding:10px 12px;font-size:12px;line-height:2"></div>
+        </div>
+      </aside>
+
+      <!-- CENTER: DETAIL -->
+      <div class="center-content">
+        <a href="index.html" class="back-btn">← Quay lại danh sách</a>
+        <div id="detailArea" class="detail-wrap">
+          <div class="loading-state">
+            <div style="font-size:36px;animation:spin 1.2s linear infinite;display:inline-block">⏳</div>
+            <p style="margin-top:12px">Đang tải nội dung văn bản...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT SIDEBAR -->
+      <aside class="right-sidebar">
+
+        <div class="hot-box">
+          <div class="hot-header">ℹ️ Hướng dẫn</div>
+          <ul class="hot-list">
+            <li>Nội dung chỉ mang tính tham khảo</li>
+            <li>Tra cứu văn bản gốc tại cơ quan ban hành</li>
+            <li>Dữ liệu được cập nhật từ CSDL pháp luật quốc gia</li>
+          </ul>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      © 2026 Thư Viện Pháp Luật Nông Nghiệp - Đất Đai - Địa Chính | Dữ liệu tham khảo
+    </div>
+  </div>
+</footer>
+
+<style>@keyframes spin{to{transform:rotate(360deg);}}</style>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const src    = params.get('src');   // 'api' or null
+const docId  = params.get('id');
+
+if (src === 'api') {
+  // ---- Load from sessionStorage (set by app.js openDetail()) ----
+  try {
+    const stored = sessionStorage.getItem('vbpl_detail');
+    if (stored) {
+      renderAPIDoc(JSON.parse(stored));
+    } else {
+      showError('Không tìm thấy dữ liệu. Vui lòng quay lại danh sách và thử lại.');
+    }
+  } catch(e) {
+    showError('Lỗi đọc dữ liệu: ' + e.message);
+  }
+} else if (docId) {
+  // ---- Load from local data.json (old flow) ----
+  fetch('data.json')
+    .then(r => r.json())
+    .then(data => {
+      const doc = data.vanban.find(d => d.id === parseInt(docId));
+      if (!doc) { showError('Văn bản không tồn tại trong dữ liệu cục bộ.'); return; }
+      renderLocalDoc(doc);
+    })
+    .catch(() => showError('Lỗi tải dữ liệu cục bộ.'));
+} else {
+  showError('Không có thông tin văn bản. Vui lòng <a href="index.html">quay lại trang chủ</a>.');
+}
+
+// ===== Render from API data (HuggingFace) =====
+function renderAPIDoc(doc) {
+  document.title = doc.tieuDe + ' - THƯ VIỆN PHÁP LUẬT';
+
+  // Format markdown content to HTML-ish display
+  const content = formatContent(doc.noiDung || '');
+
+  document.getElementById('detailArea').innerHTML = `
+    <div class="detail-doc-header">
+      <h1>${doc.tieuDe}</h1>
+      <div class="meta-grid">
+        <div class="meta-item"><b>Số hiệu</b><span>${doc.soHieu}</span></div>
+        <div class="meta-item"><b>Loại văn bản</b><span>${doc.loaiVanBan}</span></div>
+        <div class="meta-item"><b>Cơ quan ban hành</b><span>${doc.coQuanBanHanh}</span></div>
+        <div class="meta-item"><b>Ngày ban hành</b><span>${doc.ngayBanHanh}</span></div>
+        <div class="meta-item"><b>Ngày có hiệu lực</b><span>${doc.ngayHieuLuc}</span></div>
+        <div class="meta-item"><b>Tình trạng</b>
+          <span class="doc-status-badge ${doc.tinhTrang==='Còn hiệu lực'?'hl':'hhl'}" style="display:inline-block;margin-top:2px">
+            ${doc.tinhTrang}
+          </span>
+        </div>
+      </div>
+      ${doc.nganh ? `<div class="tag-list"><span>📂 ${doc.nganh}</span>${doc.linhVuc?'<span>🏷️ '+doc.linhVuc+'</span>':''}</div>` : ''}
+    </div>
+
+    <div class="detail-body">
+      <div class="doc-content">${content}</div>
+    </div>
+
+    <div class="action-bar">
+      <a href="${doc.url}" target="_blank" class="btn-primary">📖 Xem toàn văn tại vbpl.vn</a>
+      <button class="btn-secondary" onclick="window.print()">🖨️ In văn bản</button>
+      <button class="btn-secondary" onclick="copyLink()">🔗 Sao chép link</button>
+      <a href="index.html" class="btn-secondary">← Quay lại danh sách</a>
+    </div>
+  `;
+
+  // Sidebar related info
+  document.getElementById('relatedBox').style.display = 'block';
+  document.getElementById('relatedContent').innerHTML = `
+    <strong>Số hiệu:</strong> ${doc.soHieu}<br>
+    <strong>Ban hành:</strong> ${doc.ngayBanHanh}<br>
+    <strong>Hiệu lực:</strong> ${doc.ngayHieuLuc}<br>
+    <strong>Loại:</strong> ${doc.loaiVanBan}<br>
+    ${doc.nganh ? '<strong>Ngành:</strong> ' + doc.nganh + '<br>' : ''}
+  `;
+}
+
+// ===== Render from local data.json =====
+function renderLocalDoc(doc) {
+  document.title = doc.tieuDe + ' - THƯ VIỆN PHÁP LUẬT';
+  document.getElementById('detailArea').innerHTML = `
+    <div class="detail-doc-header">
+      <h1>${doc.tieuDe}</h1>
+      <div class="meta-grid">
+        <div class="meta-item"><b>Số hiệu</b><span>${doc.soHieu}</span></div>
+        <div class="meta-item"><b>Loại văn bản</b><span>${doc.loaiVanBan}</span></div>
+        <div class="meta-item"><b>Cơ quan ban hành</b><span>${doc.coQuanBanHanh}</span></div>
+        <div class="meta-item"><b>Ngày ban hành</b><span>${doc.ngayBanHanh}</span></div>
+        <div class="meta-item"><b>Ngày hiệu lực</b><span>${doc.ngayHieuLuc}</span></div>
+        <div class="meta-item"><b>Tình trạng</b>
+          <span class="doc-status-badge ${doc.tinhTrang==='Còn hiệu lực'?'hl':'hhl'}" style="display:inline-block;margin-top:2px">
+            ${doc.tinhTrang}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="detail-body">
+      <div class="doc-content">${doc.noiDung}</div>
+    </div>
+    <div class="action-bar">
+      <button class="btn-secondary" onclick="window.print()">🖨️ In văn bản</button>
+      <button class="btn-secondary" onclick="copyLink()">🔗 Sao chép link</button>
+      <a href="index.html" class="btn-secondary">← Quay lại danh sách</a>
+    </div>
+  `;
+}
+
+// ===== Format plain markdown/text content to styled HTML =====
+function formatContent(text) {
+  if (!text) return '<p style="color:#999;text-align:center">Không có nội dung</p>';
+  // Convert escaped \n to real newlines
+  text = text.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
+  // Escape HTML (but preserve intentional tags if any)
+  const lines = text.split('\n');
+  const html = [];
+  for (let line of lines) {
+    const t = line.trim();
+    if (!t) { html.push('<br>'); continue; }
+    if (t.startsWith('**') && t.endsWith('**') && t.length > 4)
+      html.push(`<h3>${t.replace(/\*\*/g,'')}</h3>`);
+    else if (t.startsWith('# '))
+      html.push(`<h2>${t.slice(2)}</h2>`);
+    else if (t.startsWith('## '))
+      html.push(`<h3>${t.slice(3)}</h3>`);
+    else if (t.startsWith('### '))
+      html.push(`<h4>${t.slice(4)}</h4>`);
+    else if (t === '---' || t === '___')
+      html.push('<hr>');
+    else {
+      // Bold inline
+      const formatted = t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>');
+      html.push(`<p>${formatted}</p>`);
+    }
+  }
+  return html.join('');
+}
+
+function showError(msg) {
+  document.getElementById('detailArea').innerHTML =
+    `<div style="padding:40px;text-align:center;color:#c00;font-size:14px">⚠️ ${msg}</div>`;
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href)
+    .then(() => alert('Đã sao chép link!'))
+    .catch(() => alert('Không thể sao chép'));
+}
+</script>
+</body>
+</html>

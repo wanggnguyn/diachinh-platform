@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>THƯ VIỆN PHÁP LUẬT - Nông Nghiệp, Đất Đai, Địa Chính</title>
+<meta name="description" content="Tra cứu văn bản quy phạm pháp luật về nông nghiệp, đất đai, địa chính. Tích hợp bản đồ quy hoạch."/>
+<link rel="stylesheet" href="style.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+
+
+<!-- HEADER NAV (gold bar) -->
+<div class="header-nav">
+  <div class="container">
+    <div class="header-nav-left">
+      <a href="#" onclick="showTab('vanban')">📋 Văn bản Pháp luật</a>
+      <a href="#" onclick="showTab('map')">🗺️ Bản đồ Quy hoạch</a>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER MAIN -->
+<div class="header-main">
+  <div class="container">
+    <a class="logo" href="#">
+      <div class="logo-circle">⚖️</div>
+      <div class="logo-text-group">
+        <div class="logo-text">THƯ VIỆN PHÁP LUẬT</div>
+        <div class="logo-slogan">Nông nghiệp · Đất đai · Địa chính · Quy hoạch</div>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<!-- SEARCH SECTION -->
+<div class="search-section">
+  <div class="container">
+    <div class="search-tabs">
+      <button class="active" onclick="switchSearchTab('all')">Văn bản Pháp Luật</button>
+      <button onclick="switchSearchTab('Nghị định')">Nghị định</button>
+      <button onclick="switchSearchTab('Thông tư')">Thông tư</button>
+      <button onclick="switchSearchTab('Công văn')">Công văn</button>
+      <button onclick="switchSearchTab('Quyết định')">Quyết định</button>
+    </div>
+    <div class="search-row">
+      <input class="search-input" type="text" id="searchInput" placeholder="Từ khoá: Số Hiệu, Tiêu đề hoặc Nội dung ngắn gọn của Văn Bản..."/>
+      <button class="search-btn" onclick="doSearch()">🔍 Tìm kiếm</button>
+    </div>
+    <div class="quick-filters">
+      <a href="#" onclick="filterByTag('all');return false">📋 Tất cả</a>
+      <a href="#" onclick="filterByTag('đất đai');return false">🏗️ Đất đai</a>
+      <a href="#" onclick="filterByTag('nông nghiệp');return false">🌾 Nông nghiệp</a>
+      <a href="#" onclick="filterByTag('quy hoạch');return false">🗺️ Quy hoạch</a>
+      <a href="#" onclick="filterByTag('bồi thường');return false">💰 Bồi thường GPMB</a>
+      <a href="#" onclick="filterByTag('giá đất');return false">📊 Giá đất</a>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="main-layout" id="tab-vanban">
+  <div class="container">
+    <div class="main-grid">
+
+      <!-- LEFT SIDEBAR -->
+      <aside class="left-sidebar">
+        <div class="sidebar-box">
+          <div class="sidebar-box-header">📂 Văn bản và Tra cứu</div>
+          <ul class="sidebar-list" id="sidebarMenu">
+            <li><a href="#" onclick="resetFilter();return false"><span class="num">1</span>Tất cả văn bản</a></li>
+            <li><a href="#" onclick="quickSearch('Luật đất đai');return false"><span class="num">2</span>Luật Đất đai 2024</a></li>
+            <li><a href="#" onclick="switchDocTab('Nghị định');return false"><span class="num">3</span>Nghị định hướng dẫn</a></li>
+            <li><a href="#" onclick="quickSearch('Bảng giá đất');return false"><span class="num">4</span>Bảng giá đất</a></li>
+            <li><a href="#" onclick="quickSearch('Biểu mẫu');return false"><span class="num">5</span>Biểu mẫu đất đai</a></li>
+            <li><a href="#" onclick="quickSearch('Quy hoạch');return false"><span class="num">6</span>Quy hoạch sử dụng đất</a></li>
+            <li><a href="#" onclick="quickSearch('Bồi thường');return false"><span class="num">7</span>Bồi thường GPMB</a></li>
+          </ul>
+        </div>
+        <div class="sidebar-box">
+          <div class="sidebar-box-header blue">🏷️ Lĩnh Vực</div>
+          <ul class="sidebar-list" id="linhVucList"></ul>
+        </div>
+        <div class="sidebar-box">
+          <div class="sidebar-box-header blue">📍 Khu Vực Quy Hoạch</div>
+          <ul class="sidebar-list" id="sidebarKhuVuc"></ul>
+        </div>
+      </aside>
+
+      <!-- CENTER CONTENT -->
+      <div class="center-content">
+        <!-- Notification -->
+        <div class="notify-box">
+          <div class="notify-header">
+            <span>📢 Thông Báo Văn Bản Mới</span>
+            <a href="#">Xem tất cả »</a>
+          </div>
+          <div class="notify-body" id="notifyList"></div>
+        </div>
+
+        <!-- Document List -->
+        <div class="doc-section">
+          <div class="doc-section-header">
+            <span>📄 Văn Bản Pháp Luật Mới — Nông Nghiệp, Đất Đai, Địa Chính</span>
+            <span style="font-size:11px;font-weight:400;color:#666" id="docCount"></span>
+          </div>
+          <div class="doc-tabs">
+            <button class="active" onclick="switchDocTab('all')">Tất cả</button>
+            <button onclick="switchDocTab('Luật')">Luật</button>
+            <button onclick="switchDocTab('Nghị định')">Nghị định</button>
+            <button onclick="switchDocTab('Thông tư')">Thông tư</button>
+          </div>
+          <div class="doc-list-container" id="docList"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT SIDEBAR -->
+      <aside class="right-sidebar">
+        <!-- Stats -->
+        <div class="stats-box">
+          <div class="stats-header">📊 THỐNG KÊ</div>
+          <ul class="stats-list" id="statsList"></ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- MAP TAB -->
+<div id="tab-map" style="display:none">
+  <div class="container">
+    <div class="map-section">
+      <div class="map-header">
+        <span>🗺️ Bản Đồ Quy Hoạch — Chọn khu vực để xem chi tiết</span>
+        <span style="font-size:11px;opacity:.8">Nhấn vào khu vực bên trái hoặc marker trên bản đồ</span>
+      </div>
+      <div class="map-body">
+        <div class="map-sidebar">
+          <div class="map-sidebar-title">📍 Các Khu Vực</div>
+          <ul class="map-area-list" id="mapKhuVucList"></ul>
+        </div>
+        <div style="position:relative">
+          <div id="map"></div>
+          <div class="map-info-panel" id="mapInfoPanel">
+            <button onclick="closeMapInfo()" style="float:right;border:none;background:none;cursor:pointer;font-size:16px;color:#666">✕</button>
+            <h4 id="mapInfoTitle"></h4>
+            <p id="mapInfoDesc"></p>
+            <p id="mapInfoPlan" style="color:#0056b3;margin:4px 0"></p>
+            <div class="land-types" id="mapInfoTypes"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="modalTitle"></h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-meta" id="modalMeta"></div>
+      <div class="modal-content-body" id="modalContent"></div>
+      <div class="related-docs" id="modalRelated"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4>⚖️ THƯ VIỆN PHÁP LUẬT</h4>
+        <p>Cơ sở dữ liệu pháp luật chuyên ngành Nông nghiệp, Đất đai, Địa chính.</p>
+        <p>📧 contact@phapluat-nongdat.vn</p>
+        <p>☎️ (028) 3930.3279</p>
+      </div>
+      <div>
+        <h4>Tra Cứu Nhanh</h4>
+        <ul>
+          <li><a href="#">Luật Đất đai 2024</a></li>
+          <li><a href="#">Nghị định bồi thường GPMB</a></li>
+          <li><a href="#">Bảng giá đất</a></li>
+          <li><a href="#">Quy hoạch sử dụng đất</a></li>
+          <li><a href="#">Chính sách nông nghiệp</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Bản Đồ Quy Hoạch</h4>
+        <ul id="footerKhuVuc"></ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2026 Thư Viện Pháp Luật Nông Nghiệp - Đất Đai - Địa Chính | Dữ liệu tham khảo
+    </div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
