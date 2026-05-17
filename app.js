@@ -1,27 +1,53 @@
 // ===== CONFIG =====
 const KEYWORDS = [
-  "đất đai", "quyền sử dụng đất", "đất nông nghiệp", "địa chính", "quy hoạch đất",
-  "giải phóng mặt bằng", "bồi thường", "thu hồi đất", "cấp giấy chứng nhận",
-  "nông nghiệp", "nông thôn", "trồng trọt", "chăn nuôi", "thủy sản", "lâm nghiệp",
-  "đất ở", "đất trồng", "tái định cư", "đăng ký đất", "sổ đỏ", "sổ hồng",
-  "quy hoạch", "sử dụng đất", "đất rừng", "hoa màu", "canh tác"
+  "đất đai",
+  "quyền sử dụng đất",
+  "đất nông nghiệp",
+  "địa chính",
+  "quy hoạch đất",
+  "giải phóng mặt bằng",
+  "bồi thường",
+  "thu hồi đất",
+  "cấp giấy chứng nhận",
+  "nông nghiệp",
+  "nông thôn",
+  "trồng trọt",
+  "chăn nuôi",
+  "thủy sản",
+  "lâm nghiệp",
+  "đất ở",
+  "đất trồng",
+  "tái định cư",
+  "đăng ký đất",
+  "sổ đỏ",
+  "sổ hồng",
+  "quy hoạch",
+  "sử dụng đất",
+  "đất rừng",
+  "hoa màu",
+  "canh tác",
 ];
 
 // ===== STATE =====
 let ALL_DOCS = []; // all fetched + filtered API docs
 let DISPLAY_DOCS = []; // current visible docs
-let currentDocTab = "all", currentTag = "all", currentSearch = "";
+let currentDocTab = "all",
+  currentTag = "all",
+  currentSearch = "",
+  currentYear = "all";
 let currentPage = 1;
 const PAGE_SIZE = 15;
-let fullMap = null, fullMarkers = [];
+let fullMap = null,
+  fullMarkers = [];
 let DATA_LOCAL = null; // local data.json for map/sidebar
 
 // ===== BOOT =====
-fetch("data.json")
+fetch("data/metadata.json")
   .then((r) => r.json())
   .then((d) => {
     DATA_LOCAL = d;
     ALL_DOCS = d.vanban || [];
+    populateYearFilter();
     renderSidebarStatic();
     renderStats();
     renderNotifyFromAPI();
@@ -183,12 +209,7 @@ function goPage(p) {
 
 // ===== OPEN DETAIL PAGE =====
 function openDetail(id) {
-  const doc = ALL_DOCS.find((d) => d.id == id);
-  if (!doc) return;
-  try {
-    sessionStorage.setItem("vbpl_detail", JSON.stringify(doc));
-  } catch (e) {}
-  window.location.href = "detail.html?src=api&id=" + encodeURIComponent(id);
+  window.location.href = "detail.html?id=" + encodeURIComponent(id);
 }
 
 // ===== MODAL DETAIL (quick preview) =====
@@ -204,17 +225,53 @@ function openDetailModal(id) {
     <div class="modal-meta-item"><div class="label">Ngày hiệu lực</div><div class="value">${doc.ngayHieuLuc}</div></div>
     <div class="modal-meta-item"><div class="label">Tình trạng</div>
       <div class="value" style="color:${doc.tinhTrang === "Còn hiệu lực" ? "#137333" : "#c5221f"}">${doc.tinhTrang}</div></div>`;
-  document.getElementById("modalContent").innerHTML =
-    `<div style="white-space:pre-wrap;font-size:12px;line-height:1.8;color:#333">${doc.noiDung.substring(0, 3000)}${doc.noiDung.length > 3000 ? "\n\n..." : ""}
+  
+  // Show loading spinner for content
+  document.getElementById("modalContent").innerHTML = `
+    <div style="text-align:center;padding:40px 20px;color:#999">
+      <div style="font-size:32px;animation:spin 1.2s linear infinite;display:inline-block;margin-bottom:10px">⏳</div>
+      <div>Đang tải nội dung văn bản...</div>
     </div>
-    <div style="margin-top:16px;text-align:center">
-      <a href="${doc.url}" target="_blank" style="padding:8px 20px;background:#cc0000;color:#fff;border-radius:4px;text-decoration:none;font-size:13px">
-        📖 Xem toàn văn tại vbpl.vn
-      </a>
-    </div>`;
+  `;
   document.getElementById("modalRelated").innerHTML = "";
   document.getElementById("modalOverlay").classList.add("show");
   document.body.style.overflow = "hidden";
+
+  // Lazy load the full article JSON
+  fetch(`articles/${id}.json`)
+    .then(r => {
+      if (!r.ok) throw new Error("Không thể tải tập tin.");
+      return r.json();
+    })
+    .then(fullDoc => {
+      const content = fullDoc.noiDung || "";
+      const isHtml = content.includes('<div') || content.includes('<p') || content.includes('<table');
+      
+      const contentHtml = isHtml 
+        ? `<div class="doc-content">${content}</div>` 
+        : `<div style="white-space:pre-wrap;font-size:12px;line-height:1.8;color:#333">${content.substring(0, 3000)}${content.length > 3000 ? "\n\n..." : ""}</div>`;
+        
+      document.getElementById("modalContent").innerHTML = `
+        ${contentHtml}
+        <div style="margin-top:16px;text-align:center">
+          <a href="${fullDoc.url}" target="_blank" style="padding:8px 20px;background:#cc0000;color:#fff;border-radius:4px;text-decoration:none;font-size:13px">
+            📖 Xem toàn văn tại vbpl.vn
+          </a>
+        </div>
+      `;
+    })
+    .catch(err => {
+      document.getElementById("modalContent").innerHTML = `
+        <div style="color:#c00;padding:20px;text-align:center">
+          ⚠️ Không thể tải nội dung văn bản. Vui lòng xem toàn văn trực tiếp tại VBPL.
+        </div>
+        <div style="margin-top:16px;text-align:center">
+          <a href="${doc.url || '#'}" target="_blank" style="padding:8px 20px;background:#cc0000;color:#fff;border-radius:4px;text-decoration:none;font-size:13px">
+            📖 Xem toàn văn tại vbpl.vn
+          </a>
+        </div>
+      `;
+    });
 }
 function closeModal(e) {
   if (!e || e.target === document.getElementById("modalOverlay")) {
@@ -235,14 +292,20 @@ function setDocFilterType(type) {
 
   document.querySelectorAll(".search-tabs button").forEach((b) => {
     b.classList.remove("active");
-    if (b.textContent === type || (type === "all" && b.textContent === "Văn bản Pháp Luật")) {
+    if (
+      b.textContent === type ||
+      (type === "all" && b.textContent === "Văn bản Pháp Luật")
+    ) {
       b.classList.add("active");
     }
   });
 
   document.querySelectorAll(".doc-tabs button").forEach((b) => {
     b.classList.remove("active");
-    if (b.textContent === type || (type === "all" && b.textContent === "Tất cả")) {
+    if (
+      b.textContent === type ||
+      (type === "all" && b.textContent === "Tất cả")
+    ) {
       b.classList.add("active");
     }
   });
@@ -250,10 +313,57 @@ function setDocFilterType(type) {
   applyFilters();
 }
 
-function switchDocTab(type) { setDocFilterType(type); }
-function switchSearchTab(type) { setDocFilterType(type); }
+function switchDocTab(type) {
+  setDocFilterType(type);
+}
+function switchSearchTab(type) {
+  setDocFilterType(type);
+}
+function extractYear(ngayBanHanh) {
+  if (!ngayBanHanh || ngayBanHanh === "—") return null;
+  const parts = ngayBanHanh.split("/");
+  if (parts.length === 3) {
+    const y = parts[2].trim();
+    if (/^\d{4}$/.test(y)) return y;
+  }
+  const match = ngayBanHanh.match(/\b(19|20)\d{2}\b/);
+  if (match) return match[0];
+  return null;
+}
+
+function populateYearFilter() {
+  const selectEl = document.getElementById("yearFilter");
+  if (!selectEl) return;
+  const currentYearNum = new Date().getFullYear();
+  let minYear = currentYearNum - 10; // mặc định 10 năm trước
+  ALL_DOCS.forEach((d) => {
+    const y = parseInt(extractYear(d.ngayBanHanh));
+    if (y && y > 1900 && y <= currentYearNum) {
+      if (y < minYear) minYear = y;
+    }
+  });
+  let html = `<option value="all">Tất cả năm</option>`;
+  for (let y = currentYearNum; y >= minYear; y--) {
+    html += `<option value="${y}">Năm ${y}</option>`;
+  }
+  selectEl.innerHTML = html;
+}
+
+function changeYearFilter() {
+  const selectEl = document.getElementById("yearFilter");
+  if (selectEl) {
+    currentYear = selectEl.value;
+    currentPage = 1;
+    applyFilters();
+  }
+}
+
 function doSearch() {
   currentSearch = document.getElementById("searchInput").value;
+  const selectEl = document.getElementById("yearFilter");
+  if (selectEl) {
+    currentYear = selectEl.value;
+  }
   currentPage = 1;
   applyFilters();
 }
@@ -272,6 +382,8 @@ function applyFilters() {
     );
   if (currentDocTab && currentDocTab !== "all")
     docs = docs.filter((d) => d.loaiVanBan === currentDocTab);
+  if (currentYear && currentYear !== "all")
+    docs = docs.filter((d) => extractYear(d.ngayBanHanh) === currentYear);
   if (kw)
     docs = docs.filter(
       (d) =>
@@ -285,7 +397,10 @@ function applyFilters() {
 function resetFilter() {
   currentTag = "all";
   currentSearch = "";
+  currentYear = "all";
   document.getElementById("searchInput").value = "";
+  const selectEl = document.getElementById("yearFilter");
+  if (selectEl) selectEl.value = "all";
   setDocFilterType("all");
 }
 

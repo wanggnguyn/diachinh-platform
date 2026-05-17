@@ -72,6 +72,13 @@ ul { list-style:none; }
   border-radius:4px 0 0 4px;
 }
 .search-input:focus { border-color:#f90; }
+.search-select-year {
+  padding:10px 14px; border:2px solid #ddd; border-left:none;
+  font-size:13px; font-family:inherit; outline:none;
+  background:#fff; cursor:pointer; border-radius:0;
+  min-width:130px; color:#333; transition:border-color .2s;
+}
+.search-select-year:focus { border-color:#f90; }
 .search-btn {
   padding:10px 24px; background:#ffc107; color:#333;
   border:2px solid #ffc107; font-size:13px; font-weight:700;
@@ -365,4 +372,84 @@ ul { list-style:none; }
 
 /* ===== LOADING SPIN ===== */
 @keyframes spin { to { transform:rotate(360deg); } }
+
+/* ===== SKELETON SHIMMER LOADING ===== */
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-loader {
+  background: linear-gradient(90deg, #f0f3f6 25%, #e1e7ec 50%, #f0f3f6 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite linear;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.skeleton-text {
+  height: 12px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.skeleton-text.short {
+  width: 60%;
+}
+
+.skeleton-title {
+  height: 18px;
+  margin-bottom: 12px;
+  width: 80%;
+}
+
+.skeleton-doc-card {
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #eef2f5;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.skeleton-notify-row {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  border-bottom: 1px dashed #eef2f5;
+}
+
+.skeleton-notify-line {
+  height: 12px;
+  width: 85%;
+  margin-bottom: 6px;
+}
+
+.skeleton-notify-date {
+  height: 10px;
+  width: 30%;
+}
+
+.skeleton-sidebar-line {
+  height: 14px;
+  width: 90%;
+  margin: 10px 16px;
+}
+
+.skeleton-stats-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+}
+
+.skeleton-stats-label {
+  height: 12px;
+  width: 55%;
+}
+
+.skeleton-stats-val {
+  height: 12px;
+  width: 25%;
+}
 

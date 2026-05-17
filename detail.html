@@ -145,54 +145,53 @@
 
 <script>
 const params = new URLSearchParams(window.location.search);
-const src    = params.get('src');   // 'api' or null
 const docId  = params.get('id');
 
-if (src === 'api') {
-  // ---- Load from sessionStorage (set by app.js openDetail()) ----
-  try {
-    const stored = sessionStorage.getItem('vbpl_detail');
-    if (stored) {
-      renderAPIDoc(JSON.parse(stored));
-    } else {
-      showError('Không tìm thấy dữ liệu. Vui lòng quay lại danh sách và thử lại.');
-    }
-  } catch(e) {
-    showError('Lỗi đọc dữ liệu: ' + e.message);
-  }
-} else if (docId) {
-  // ---- Load from local data.json (old flow) ----
-  fetch('data.json')
-    .then(r => r.json())
-    .then(data => {
-      const doc = data.vanban.find(d => d.id === parseInt(docId));
-      if (!doc) { showError('Văn bản không tồn tại trong dữ liệu cục bộ.'); return; }
-      renderLocalDoc(doc);
+if (docId) {
+  // Show loading state
+  document.getElementById('detailArea').innerHTML = `
+    <div class="loading-state">
+      <div style="font-size:36px;animation:spin 1.2s linear infinite;display:inline-block">⏳</div>
+      <p style="margin-top:12px">Đang tải nội dung văn bản...</p>
+    </div>
+  `;
+  
+  fetch(`articles/${docId}.json`)
+    .then(r => {
+      if (!r.ok) throw new Error('Văn bản không tồn tại.');
+      return r.json();
     })
-    .catch(() => showError('Lỗi tải dữ liệu cục bộ.'));
+    .then(doc => {
+      renderAPIDoc(doc);
+    })
+    .catch(err => {
+      showError('Lỗi tải dữ liệu văn bản: ' + err.message);
+    });
 } else {
   showError('Không có thông tin văn bản. Vui lòng <a href="index.html">quay lại trang chủ</a>.');
 }
 
-// ===== Render from API data (HuggingFace) =====
+// ===== Render Document =====
 function renderAPIDoc(doc) {
   document.title = doc.tieuDe + ' - THƯ VIỆN PHÁP LUẬT';
 
-  // Format markdown content to HTML-ish display
-  const content = formatContent(doc.noiDung || '');
+  // Check if content is HTML or raw text/markdown
+  const contentRaw = doc.noiDung || '';
+  const isHtml = contentRaw.includes('<div') || contentRaw.includes('<p') || contentRaw.includes('<table');
+  const content = isHtml ? contentRaw : formatContent(contentRaw);
 
   document.getElementById('detailArea').innerHTML = `
     <div class="detail-doc-header">
       <h1>${doc.tieuDe}</h1>
       <div class="meta-grid">
-        <div class="meta-item"><b>Số hiệu</b><span>${doc.soHieu}</span></div>
-        <div class="meta-item"><b>Loại văn bản</b><span>${doc.loaiVanBan}</span></div>
-        <div class="meta-item"><b>Cơ quan ban hành</b><span>${doc.coQuanBanHanh}</span></div>
-        <div class="meta-item"><b>Ngày ban hành</b><span>${doc.ngayBanHanh}</span></div>
-        <div class="meta-item"><b>Ngày có hiệu lực</b><span>${doc.ngayHieuLuc}</span></div>
+        <div class="meta-item"><b>Số hiệu</b><span>${doc.soHieu || '—'}</span></div>
+        <div class="meta-item"><b>Loại văn bản</b><span>${doc.loaiVanBan || '—'}</span></div>
+        <div class="meta-item"><b>Cơ quan ban hành</b><span>${doc.coQuanBanHanh || '—'}</span></div>
+        <div class="meta-item"><b>Ngày ban hành</b><span>${doc.ngayBanHanh || '—'}</span></div>
+        <div class="meta-item"><b>Ngày có hiệu lực</b><span>${doc.ngayHieuLuc || '—'}</span></div>
         <div class="meta-item"><b>Tình trạng</b>
           <span class="doc-status-badge ${doc.tinhTrang==='Còn hiệu lực'?'hl':'hhl'}" style="display:inline-block;margin-top:2px">
-            ${doc.tinhTrang}
+            ${doc.tinhTrang || '—'}
           </span>
         </div>
       </div>
@@ -204,7 +203,7 @@ function renderAPIDoc(doc) {
     </div>
 
     <div class="action-bar">
-      <a href="${doc.url}" target="_blank" class="btn-primary">📖 Xem toàn văn tại vbpl.vn</a>
+      ${doc.url ? `<a href="${doc.url}" target="_blank" class="btn-primary">📖 Xem toàn văn tại vbpl.vn</a>` : ''}
       <button class="btn-secondary" onclick="window.print()">🖨️ In văn bản</button>
       <button class="btn-secondary" onclick="copyLink()">🔗 Sao chép link</button>
       <a href="index.html" class="btn-secondary">← Quay lại danh sách</a>
@@ -214,41 +213,11 @@ function renderAPIDoc(doc) {
   // Sidebar related info
   document.getElementById('relatedBox').style.display = 'block';
   document.getElementById('relatedContent').innerHTML = `
-    <strong>Số hiệu:</strong> ${doc.soHieu}<br>
-    <strong>Ban hành:</strong> ${doc.ngayBanHanh}<br>
-    <strong>Hiệu lực:</strong> ${doc.ngayHieuLuc}<br>
-    <strong>Loại:</strong> ${doc.loaiVanBan}<br>
+    <strong>Số hiệu:</strong> ${doc.soHieu || '—'}<br>
+    <strong>Ban hành:</strong> ${doc.ngayBanHanh || '—'}<br>
+    <strong>Hiệu lực:</strong> ${doc.ngayHieuLuc || '—'}<br>
+    <strong>Loại:</strong> ${doc.loaiVanBan || '—'}<br>
     ${doc.nganh ? '<strong>Ngành:</strong> ' + doc.nganh + '<br>' : ''}
-  `;
-}
-
-// ===== Render from local data.json =====
-function renderLocalDoc(doc) {
-  document.title = doc.tieuDe + ' - THƯ VIỆN PHÁP LUẬT';
-  document.getElementById('detailArea').innerHTML = `
-    <div class="detail-doc-header">
-      <h1>${doc.tieuDe}</h1>
-      <div class="meta-grid">
-        <div class="meta-item"><b>Số hiệu</b><span>${doc.soHieu}</span></div>
-        <div class="meta-item"><b>Loại văn bản</b><span>${doc.loaiVanBan}</span></div>
-        <div class="meta-item"><b>Cơ quan ban hành</b><span>${doc.coQuanBanHanh}</span></div>
-        <div class="meta-item"><b>Ngày ban hành</b><span>${doc.ngayBanHanh}</span></div>
-        <div class="meta-item"><b>Ngày hiệu lực</b><span>${doc.ngayHieuLuc}</span></div>
-        <div class="meta-item"><b>Tình trạng</b>
-          <span class="doc-status-badge ${doc.tinhTrang==='Còn hiệu lực'?'hl':'hhl'}" style="display:inline-block;margin-top:2px">
-            ${doc.tinhTrang}
-          </span>
-        </div>
-      </div>
-    </div>
-    <div class="detail-body">
-      <div class="doc-content">${doc.noiDung}</div>
-    </div>
-    <div class="action-bar">
-      <button class="btn-secondary" onclick="window.print()">🖨️ In văn bản</button>
-      <button class="btn-secondary" onclick="copyLink()">🔗 Sao chép link</button>
-      <a href="index.html" class="btn-secondary">← Quay lại danh sách</a>
-    </div>
   `;
 }
 

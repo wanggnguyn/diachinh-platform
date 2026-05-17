@@ -49,6 +49,9 @@
     </div>
     <div class="search-row">
       <input class="search-input" type="text" id="searchInput" placeholder="Từ khoá: Số Hiệu, Tiêu đề hoặc Nội dung ngắn gọn của Văn Bản..."/>
+      <select class="search-select-year" id="yearFilter" onchange="changeYearFilter()">
+        <option value="all">Tất cả năm</option>
+      </select>
       <button class="search-btn" onclick="doSearch()">🔍 Tìm kiếm</button>
     </div>
     <div class="quick-filters">
@@ -83,11 +86,20 @@
         </div>
         <div class="sidebar-box">
           <div class="sidebar-box-header blue">🏷️ Lĩnh Vực</div>
-          <ul class="sidebar-list" id="linhVucList"></ul>
+          <ul class="sidebar-list" id="linhVucList">
+            <li><div class="skeleton-loader skeleton-sidebar-line" style="width:75%"></div></li>
+            <li><div class="skeleton-loader skeleton-sidebar-line" style="width:85%"></div></li>
+            <li><div class="skeleton-loader skeleton-sidebar-line" style="width:65%"></div></li>
+            <li><div class="skeleton-loader skeleton-sidebar-line" style="width:80%"></div></li>
+          </ul>
         </div>
         <div class="sidebar-box">
           <div class="sidebar-box-header blue">📍 Khu Vực Quy Hoạch</div>
-          <ul class="sidebar-list" id="sidebarKhuVuc"></ul>
+          <ul class="sidebar-list" id="sidebarKhuVuc">
+            <li><div class="skeleton-loader skeleton-sidebar-line" style="width:80%"></div></li>
+            <li><div class="skeleton-loader skeleton-sidebar-line" style="width:70%"></div></li>
+            <li><div class="skeleton-loader skeleton-sidebar-line" style="width:85%"></div></li>
+          </ul>
         </div>
       </aside>
 
@@ -99,7 +111,20 @@
             <span>📢 Thông Báo Văn Bản Mới</span>
             <a href="#">Xem tất cả »</a>
           </div>
-          <div class="notify-body" id="notifyList"></div>
+          <div class="notify-body" id="notifyList">
+            <div class="skeleton-notify-row">
+              <div class="skeleton-loader skeleton-notify-line"></div>
+              <div class="skeleton-loader skeleton-notify-date"></div>
+            </div>
+            <div class="skeleton-notify-row">
+              <div class="skeleton-loader skeleton-notify-line" style="width:75%"></div>
+              <div class="skeleton-loader skeleton-notify-date"></div>
+            </div>
+            <div class="skeleton-notify-row">
+              <div class="skeleton-loader skeleton-notify-line" style="width:80%"></div>
+              <div class="skeleton-loader skeleton-notify-date"></div>
+            </div>
+          </div>
         </div>
 
         <!-- Document List -->
@@ -114,7 +139,23 @@
             <button onclick="switchDocTab('Nghị định')">Nghị định</button>
             <button onclick="switchDocTab('Thông tư')">Thông tư</button>
           </div>
-          <div class="doc-list-container" id="docList"></div>
+          <div class="doc-list-container" id="docList">
+            <div class="skeleton-doc-card">
+              <div class="skeleton-loader skeleton-title"></div>
+              <div class="skeleton-loader skeleton-text"></div>
+              <div class="skeleton-loader skeleton-text short"></div>
+            </div>
+            <div class="skeleton-doc-card">
+              <div class="skeleton-loader skeleton-title" style="width:70%"></div>
+              <div class="skeleton-loader skeleton-text"></div>
+              <div class="skeleton-loader skeleton-text short" style="width:50%"></div>
+            </div>
+            <div class="skeleton-doc-card">
+              <div class="skeleton-loader skeleton-title" style="width:75%"></div>
+              <div class="skeleton-loader skeleton-text"></div>
+              <div class="skeleton-loader skeleton-text short" style="width:55%"></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -123,7 +164,32 @@
         <!-- Stats -->
         <div class="stats-box">
           <div class="stats-header">📊 THỐNG KÊ</div>
-          <ul class="stats-list" id="statsList"></ul>
+          <ul class="stats-list" id="statsList">
+            <li class="skeleton-stats-row">
+              <div class="skeleton-loader skeleton-stats-label"></div>
+              <div class="skeleton-loader skeleton-stats-val"></div>
+            </li>
+            <li class="skeleton-stats-row">
+              <div class="skeleton-loader skeleton-stats-label" style="width:45%"></div>
+              <div class="skeleton-loader skeleton-stats-val" style="width:20%"></div>
+            </li>
+            <li class="skeleton-stats-row">
+              <div class="skeleton-loader skeleton-stats-label" style="width:50%"></div>
+              <div class="skeleton-loader skeleton-stats-val" style="width:22%"></div>
+            </li>
+            <li class="skeleton-stats-row">
+              <div class="skeleton-loader skeleton-stats-label" style="width:48%"></div>
+              <div class="skeleton-loader skeleton-stats-val" style="width:18%"></div>
+            </li>
+            <li class="skeleton-stats-row">
+              <div class="skeleton-loader skeleton-stats-label" style="width:52%"></div>
+              <div class="skeleton-loader skeleton-stats-val" style="width:25%"></div>
+            </li>
+            <li class="skeleton-stats-row">
+              <div class="skeleton-loader skeleton-stats-label" style="width:47%"></div>
+              <div class="skeleton-loader skeleton-stats-val" style="width:20%"></div>
+            </li>
+          </ul>
         </div>
       </aside>
     </div>

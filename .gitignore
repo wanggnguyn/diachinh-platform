@@ -1,0 +1,10 @@
+# Ignore giant database files (exceeds GitHub's 100MB limit)
+data.json
+data_backup.json
+
+# Ignore Python caches
+__pycache__/
+*.pyc
+
+# Ignore crawling progress tracker (optional, keep it local)
+supplement_progress.json
