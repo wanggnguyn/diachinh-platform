@@ -3,11 +3,10 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>THƯ VIỆN PHÁP LUẬT - Nông Nghiệp, Đất Đai, Địa Chính</title>
-<meta name="description" content="Tra cứu văn bản quy phạm pháp luật về nông nghiệp, đất đai, địa chính. Tích hợp bản đồ quy hoạch."/>
+<title>Cổng Tra Cứu Đất Đai & Quy Hoạch Hà Nội</title>
+<meta name="description" content="Tra cứu văn bản quy phạm pháp luật về nông nghiệp, đất đai, địa chính. Tích hợp bản đồ quy hoạch Hà Nội."/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗺️</text></svg>">
 <link rel="stylesheet" href="style.css"/>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 
@@ -29,8 +28,8 @@
     <a class="logo" href="#">
       <div class="logo-circle">⚖️</div>
       <div class="logo-text-group">
-        <div class="logo-text">THƯ VIỆN PHÁP LUẬT</div>
-        <div class="logo-slogan">Nông nghiệp · Đất đai · Địa chính · Quy hoạch</div>
+        <div class="logo-text">ĐẤT ĐAI & QUY HOẠCH</div>
+        <div class="logo-slogan">Tra cứu pháp luật địa chính & Bản đồ quy hoạch</div>
       </div>
     </a>
 
@@ -44,7 +43,6 @@
       <button class="active" onclick="switchSearchTab('all')">Văn bản Pháp Luật</button>
       <button onclick="switchSearchTab('Nghị định')">Nghị định</button>
       <button onclick="switchSearchTab('Thông tư')">Thông tư</button>
-      <button onclick="switchSearchTab('Công văn')">Công văn</button>
       <button onclick="switchSearchTab('Quyết định')">Quyết định</button>
     </div>
     <div class="search-row">
@@ -76,7 +74,7 @@
           <div class="sidebar-box-header">📂 Văn bản và Tra cứu</div>
           <ul class="sidebar-list" id="sidebarMenu">
             <li><a href="#" onclick="resetFilter();return false"><span class="num">1</span>Tất cả văn bản</a></li>
-            <li><a href="#" onclick="quickSearch('Luật đất đai');return false"><span class="num">2</span>Luật Đất đai 2024</a></li>
+            <li><a href="#" onclick="quickSearch('Luật đất đai');return false"><span class="num">2</span>Luật Đất đai</a></li>
             <li><a href="#" onclick="switchDocTab('Nghị định');return false"><span class="num">3</span>Nghị định hướng dẫn</a></li>
             <li><a href="#" onclick="quickSearch('Bảng giá đất');return false"><span class="num">4</span>Bảng giá đất</a></li>
             <li><a href="#" onclick="quickSearch('Biểu mẫu');return false"><span class="num">5</span>Biểu mẫu đất đai</a></li>
@@ -93,14 +91,6 @@
             <li><div class="skeleton-loader skeleton-sidebar-line" style="width:80%"></div></li>
           </ul>
         </div>
-        <div class="sidebar-box">
-          <div class="sidebar-box-header blue">📍 Khu Vực Quy Hoạch</div>
-          <ul class="sidebar-list" id="sidebarKhuVuc">
-            <li><div class="skeleton-loader skeleton-sidebar-line" style="width:80%"></div></li>
-            <li><div class="skeleton-loader skeleton-sidebar-line" style="width:70%"></div></li>
-            <li><div class="skeleton-loader skeleton-sidebar-line" style="width:85%"></div></li>
-          </ul>
-        </div>
       </aside>
 
       <!-- CENTER CONTENT -->
@@ -108,7 +98,7 @@
         <!-- Notification -->
         <div class="notify-box">
           <div class="notify-header">
-            <span>📢 Thông Báo Văn Bản Mới</span>
+            <span>Văn Bản Mới</span>
             <a href="#">Xem tất cả »</a>
           </div>
           <div class="notify-body" id="notifyList">
@@ -201,24 +191,11 @@
   <div class="container">
     <div class="map-section">
       <div class="map-header">
-        <span>🗺️ Bản Đồ Quy Hoạch — Chọn khu vực để xem chi tiết</span>
-        <span style="font-size:11px;opacity:.8">Nhấn vào khu vực bên trái hoặc marker trên bản đồ</span>
+        <span>🗺️ Bản Đồ Quy Hoạch Hà Nội</span>
+        <span style="font-size:11px;opacity:.8">Nguồn: quyhoach.hanoi.vn</span>
       </div>
-      <div class="map-body">
-        <div class="map-sidebar">
-          <div class="map-sidebar-title">📍 Các Khu Vực</div>
-          <ul class="map-area-list" id="mapKhuVucList"></ul>
-        </div>
-        <div style="position:relative">
-          <div id="map"></div>
-          <div class="map-info-panel" id="mapInfoPanel">
-            <button onclick="closeMapInfo()" style="float:right;border:none;background:none;cursor:pointer;font-size:16px;color:#666">✕</button>
-            <h4 id="mapInfoTitle"></h4>
-            <p id="mapInfoDesc"></p>
-            <p id="mapInfoPlan" style="color:#0056b3;margin:4px 0"></p>
-            <div class="land-types" id="mapInfoTypes"></div>
-          </div>
-        </div>
+      <div class="map-body" style="height: 600px; padding: 0;">
+        <iframe src="https://quyhoach.hanoi.gov.vn/quyhoach" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
       </div>
     </div>
   </div>
@@ -245,7 +222,7 @@
   <div class="container">
     <div class="footer-grid">
       <div>
-        <h4>⚖️ THƯ VIỆN PHÁP LUẬT</h4>
+        <h4>⚖️ ĐẤT ĐAI & QUY HOẠCH</h4>
         <p>Cơ sở dữ liệu pháp luật chuyên ngành Nông nghiệp, Đất đai, Địa chính.</p>
         <p>📧 contact@phapluat-nongdat.vn</p>
         <p>☎️ (028) 3930.3279</p>
@@ -253,20 +230,17 @@
       <div>
         <h4>Tra Cứu Nhanh</h4>
         <ul>
-          <li><a href="#">Luật Đất đai 2024</a></li>
+          <li><a href="#">Luật Đất đai</a></li>
           <li><a href="#">Nghị định bồi thường GPMB</a></li>
           <li><a href="#">Bảng giá đất</a></li>
           <li><a href="#">Quy hoạch sử dụng đất</a></li>
           <li><a href="#">Chính sách nông nghiệp</a></li>
         </ul>
       </div>
-      <div>
-        <h4>Bản Đồ Quy Hoạch</h4>
-        <ul id="footerKhuVuc"></ul>
       </div>
     </div>
     <div class="footer-bottom">
-      © 2026 Thư Viện Pháp Luật Nông Nghiệp - Đất Đai - Địa Chính | Dữ liệu tham khảo
+      © 2026 Hệ Thống Tra Cứu Đất Đai & Quy Hoạch Hà Nội | Dữ liệu tham khảo
     </div>
   </div>
 </footer>

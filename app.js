@@ -37,8 +37,6 @@ let currentDocTab = "all",
   currentYear = "all";
 let currentPage = 1;
 const PAGE_SIZE = 15;
-let fullMap = null,
-  fullMarkers = [];
 let DATA_LOCAL = null; // local data.json for map/sidebar
 
 // ===== BOOT =====
@@ -62,18 +60,6 @@ function renderSidebarStatic() {
     .map(
       (lv) =>
         `<li><a href="#" onclick="filterByTag('${lv.ten.toLowerCase()}');return false">${lv.icon} ${lv.ten}</a></li>`,
-    )
-    .join("");
-  document.getElementById("sidebarKhuVuc").innerHTML = DATA_LOCAL.khuVuc
-    .map(
-      (kv) =>
-        `<li><a href="#" id="sv_${kv.id}" onclick="zoomFull('${kv.id}');showTab('map');return false">📍 ${kv.ten}</a></li>`,
-    )
-    .join("");
-  document.getElementById("footerKhuVuc").innerHTML = DATA_LOCAL.khuVuc
-    .map(
-      (kv) =>
-        `<li><a href="#" onclick="zoomFull('${kv.id}');showTab('map');return false">${kv.ten}</a></li>`,
     )
     .join("");
 }
@@ -376,7 +362,7 @@ function applyFilters() {
   let docs = ALL_DOCS;
   if (currentTag && currentTag !== "all")
     docs = docs.filter((d) =>
-      (d.tieuDe + d.nganh + d.linhVuc + d.noiDung)
+      ((d.tieuDe || "") + (d.nganh || "") + (d.linhVuc || ""))
         .toLowerCase()
         .includes(currentTag.toLowerCase()),
     );
@@ -387,10 +373,9 @@ function applyFilters() {
   if (kw)
     docs = docs.filter(
       (d) =>
-        d.tieuDe.toLowerCase().includes(kw) ||
-        d.soHieu.toLowerCase().includes(kw) ||
-        d.coQuanBanHanh.toLowerCase().includes(kw) ||
-        d.noiDung.toLowerCase().includes(kw),
+        (d.tieuDe && d.tieuDe.toLowerCase().includes(kw)) ||
+        (d.soHieu && d.soHieu.toLowerCase().includes(kw)) ||
+        (d.coQuanBanHanh && d.coQuanBanHanh.toLowerCase().includes(kw))
     );
   renderDocs(docs);
 }
@@ -404,66 +389,12 @@ function resetFilter() {
   setDocFilterType("all");
 }
 
-// ===== MAP =====
+// ===== TABS =====
 function showTab(tab) {
   document.getElementById("tab-vanban").style.display =
     tab === "vanban" ? "block" : "none";
   document.getElementById("tab-map").style.display =
     tab === "map" ? "block" : "none";
-  if (tab === "map") {
-    if (!fullMap) {
-      setTimeout(() => {
-        fullMap = L.map("map", { zoomControl: true }).setView(
-          [21.03, 105.85],
-          11,
-        );
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: "© OpenStreetMap",
-          maxZoom: 19,
-        }).addTo(fullMap);
-        DATA_LOCAL.khuVuc.forEach((kv) => {
-          const m = L.marker(kv.center)
-            .addTo(fullMap)
-            .bindPopup(
-              `<strong>${kv.ten}</strong><br><span style="font-size:11px">${kv.quyHoach.substring(0, 100)}...</span>`,
-            );
-          m.on("click", () => showFullInfo(kv.id));
-          fullMarkers.push({ id: kv.id, marker: m });
-        });
-        document.getElementById("mapKhuVucList").innerHTML = DATA_LOCAL.khuVuc
-          .map(
-            (kv) =>
-              `<li><a href="#" id="fm_${kv.id}" onclick="zoomFull('${kv.id}');return false">📍 ${kv.ten}</a></li>`,
-          )
-          .join("");
-      }, 100);
-    } else {
-      fullMap.invalidateSize();
-    }
-  }
-}
-function showFullInfo(id) {
-  const kv = DATA_LOCAL.khuVuc.find((k) => k.id === id);
-  if (!kv) return;
-  document.getElementById("mapInfoTitle").textContent = "📍 " + kv.ten;
-  document.getElementById("mapInfoDesc").textContent = kv.moTa;
-  document.getElementById("mapInfoPlan").innerHTML =
-    "<strong>Quy hoạch:</strong> " + kv.quyHoach;
-  document.getElementById("mapInfoTypes").innerHTML = kv.loaiDat
-    .map((ld) => `<span class="land-type">${ld}</span>`)
-    .join("");
-  document.getElementById("mapInfoPanel").classList.add("show");
-}
-function closeMapInfo() {
-  document.getElementById("mapInfoPanel").classList.remove("show");
-}
-function zoomFull(id) {
-  const kv = DATA_LOCAL.khuVuc.find((k) => k.id === id);
-  if (!kv || !fullMap) return;
-  fullMap.setView(kv.center, kv.zoom, { animate: true });
-  const m = fullMarkers.find((m) => m.id === id);
-  if (m) m.marker.openPopup();
-  showFullInfo(id);
 }
 
 // ===== KEYBOARD =====

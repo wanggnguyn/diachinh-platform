@@ -253,8 +253,7 @@ ul { list-style:none; }
   font-size:14px; font-weight:700;
   display:flex; justify-content:space-between; align-items:center;
 }
-.map-body { display:grid; grid-template-columns:220px 1fr; }
-.map-sidebar { border-right:1px solid #ddd; }
+.map-body { display:block; width:100%; }
 .map-sidebar-title {
   padding:8px 12px; background:#f5f5f5;
   font-size:12px; font-weight:700; color:#333;
@@ -351,7 +350,6 @@ ul { list-style:none; }
 @media(max-width:1024px) {
   .main-grid { grid-template-columns:1fr; }
   .left-sidebar,.right-sidebar { display:none; }
-  .map-body { grid-template-columns:1fr; }
   .footer-grid { grid-template-columns:1fr; }
 }
 @media(max-width:768px) {
